@@ -3,7 +3,8 @@ using System.Net.Mail;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
-
+using Settings;
+using Response;
 async Task<decimal> GetStockPriceAsync(string ticker)
 {
     HttpClient client = new HttpClient();
@@ -83,32 +84,7 @@ while (true)
 
 }
 
-public class ApiResponse
-{
-    public List<StockResult> Results { get; set; } = new();
-}
-
-public class StockResult
-{
-    public string Symbol { get; set; } = string.Empty;
-    public decimal RegularMarketPrice { get; set; }
-}
-
-public class EmailSettings
-{
-    public string EmailTo { get; set; } = string.Empty;
-    public string SmtpHost { get; set; } = string.Empty;
-    public int SmtpPort { get; set; }
-    public bool EnableSsl { get; set; }
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string From { get; set; } = string.Empty;
 
 
-}
 
-public class AppSettings
-{
-    public EmailSettings EmailSettings { get; set; } = new();
-}
 
