@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Mail;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -21,34 +23,52 @@ async Task<decimal> GetStockPriceAsync(string ticker)
     return 0;
 }
 
-while (true)
+async Task EnviarEmail(EmailSettings config, string assunto, string corpo)
 {
-    var price = await GetStockPriceAsync(args[0]);
-    var sellPrice = decimal.Parse(args[1]);
-    var buyPrice = decimal.Parse(args[2]);
-    Console.WriteLine($"agora: {price}");
-    if (price > sellPrice)
-    {
-        Console.WriteLine("ALERTA: É recomendável a VENDA.");
-    }
-    else if (price < buyPrice)
-    {
-        Console.WriteLine("ALERTA: É recomendável a COMPRA.");
-    }
-    else
-    {
-        Console.WriteLine("ALERTA: Nenhuma ação recomendada.");
-    }
-    ;
-    await Task.Delay(TimeSpan.FromSeconds(10));
+    using var mensagem = new MailMessage();
+
+    mensagem.From = new MailAddress(config.From);
+    mensagem.To.Add(config.EmailTo);
+    mensagem.Subject = assunto;
+    mensagem.Body = corpo;
+    mensagem.IsBodyHtml = false;
+
+    using var smtp = new SmtpClient(config.SmtpHost, config.SmtpPort);
+
+    smtp.Credentials = new NetworkCredential(
+        config.Username,
+        config.Password);
+
+    smtp.EnableSsl = config.EnableSsl;
+
+    await smtp.SendMailAsync(mensagem);
 }
+
 
 var json = File.ReadAllText("appsettings.json");
 
 var settings = JsonSerializer.Deserialize<AppSettings>(json);
 
-Console.WriteLine(settings.EmailSettings.EmailTo);
-Console.WriteLine(settings.EmailSettings.SmtpHost);
+while (true)
+{
+    var price = await GetStockPriceAsync(args[0]);
+    var sellPrice = decimal.Parse(args[1]);
+    var buyPrice = decimal.Parse(args[2]);
+    if (price > sellPrice)
+    {
+        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a venda do seu ativo", $"Você possui um ativo na bolsa {args[0]} que está acima do preço que foi comprado. Recomendamos a venda nesse exato momento. \nAgora: {price}");
+    }
+    else if (price < buyPrice)
+    {
+        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a compra de um ativo", $"O ativo {args[0]} está com um preço abaixo do que normal. Recomendamos a compra nesse exato momento. \nAgora: {price}");
+    }
+    else
+    {
+        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável não realizar operações com seu ativo", $"Você possui um ativo na bolsa {args[0]} que está dentro da faixa média de preço. Recomendamos não realizar nenhuma operação no momento. \nAgora: {price}");
+    }
+
+    await Task.Delay(TimeSpan.FromSeconds(60));
+}
 
 public class ApiResponse
 {
@@ -78,3 +98,4 @@ public class AppSettings
 {
     public EmailSettings EmailSettings { get; set; } = new();
 }
+
