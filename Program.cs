@@ -49,25 +49,38 @@ var json = File.ReadAllText("appsettings.json");
 
 var settings = JsonSerializer.Deserialize<AppSettings>(json);
 
+decimal? sendPrice = null;
+
 while (true)
 {
+    Console.WriteLine("Começo do while");
     var price = await GetStockPriceAsync(args[0]);
     var sellPrice = decimal.Parse(args[1]);
     var buyPrice = decimal.Parse(args[2]);
-    if (price > sellPrice)
+    Console.WriteLine($"Preço = {price}\nsendPrice = {sendPrice}");
+    if (price != sendPrice)
     {
-        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a venda do seu ativo", $"Você possui um ativo na bolsa {args[0]} que está acima do preço que foi comprado. Recomendamos a venda nesse exato momento. \nAgora: {price}");
-    }
-    else if (price < buyPrice)
-    {
-        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a compra de um ativo", $"O ativo {args[0]} está com um preço abaixo do que normal. Recomendamos a compra nesse exato momento. \nAgora: {price}");
-    }
-    else
-    {
-        await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável não realizar operações com seu ativo", $"Você possui um ativo na bolsa {args[0]} que está dentro da faixa média de preço. Recomendamos não realizar nenhuma operação no momento. \nAgora: {price}");
+        Console.WriteLine("Analisando preço ao enviar o email.");
+        if (price > sellPrice)
+        {
+            Console.WriteLine("Venda!");
+            await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a venda do seu ativo", $"O ativo {args[0]} está acima do preço de referência para venda. \nPreço Atual: {price}");
+            sendPrice = price;
+            Console.WriteLine("Email enviado!");
+        }
+        else if (price < buyPrice)
+        {
+            Console.WriteLine("Compra");
+            await EnviarEmail(settings.EmailSettings, "ALERTA: É recomendável a compra de um ativo", $"O ativo {args[0]} está abaixo do preço de referência para compra. \nPreço Atual: {price}");
+            sendPrice = price;
+            Console.WriteLine("Email enviado!");
+        }
+
     }
 
-    await Task.Delay(TimeSpan.FromSeconds(60));
+    Console.WriteLine("Tempo de espera");
+    await Task.Delay(TimeSpan.FromSeconds(10));
+
 }
 
 public class ApiResponse
