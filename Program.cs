@@ -20,8 +20,27 @@ async Task<decimal> GetStockPriceAsync(string ticker)
     return 0;
 }
 
-var preco = await GetStockPriceAsync("PETR4");
-Console.WriteLine(preco);
+while (true)
+{
+    var price = await GetStockPriceAsync(args[0]);
+    var sellPrice = decimal.Parse(args[1]);
+    var buyPrice = decimal.Parse(args[2]);
+    Console.WriteLine($"agora: {price}");
+    if (price > sellPrice)
+    {
+        Console.WriteLine("ALERTA: É recomendável a VENDA.");
+    }
+    else if (price < buyPrice)
+    {
+        Console.WriteLine("ALERTA: É recomendável a COMPRA.");
+    }
+    else
+    {
+        Console.WriteLine("ALERTA: Nenhuma ação recomendada.");
+    }
+    ;
+    await Task.Delay(TimeSpan.FromSeconds(10));
+}
 
 public class ApiResponse
 {
