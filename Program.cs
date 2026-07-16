@@ -1,5 +1,4 @@
-﻿
-using System.Text.Json;
+﻿using System.Text.Json;
 using Settings;
 using Integration;
 using Email;
@@ -14,33 +13,67 @@ EmailSender emailSender = new();
 
 while (true)
 {
-    Console.WriteLine("Começo do while");
-    var price = await get.GetStockPriceAsync(args[0]);
-    var sellPrice = decimal.Parse(args[1]);
-    var buyPrice = decimal.Parse(args[2]);
-    Console.WriteLine($"Preço = {price}\nsendPrice = {sendPrice}");
-    if (price != sendPrice)
+
+    if (args.Length == 3)
     {
-        Console.WriteLine("Analisando preço ao enviar o email.");
-        if (price > sellPrice)
+        if (!decimal.TryParse(args[1], out var sellPrice))
         {
-            Console.WriteLine("Venda!");
-            await emailSender.SendEmail(settings!.EmailSettings, "ALERTA: É recomendável a venda do seu ativo", $"O ativo {args[0]} está acima do preço de referência para venda. \nPreço Atual: {price}");
-            sendPrice = price;
-            Console.WriteLine("Email enviado!");
+            Console.WriteLine("ERRO: Preço de venda inválido.");
+            Environment.Exit(0);
+
         }
-        else if (price < buyPrice)
+        if (!decimal.TryParse(args[2], out var buyPrice))
         {
-            Console.WriteLine("Compra");
-            await emailSender.SendEmail(settings!.EmailSettings, "ALERTA: É recomendável a compra de um ativo", $"O ativo {args[0]} está abaixo do preço de referência para compra. \nPreço Atual: {price}");
-            sendPrice = price;
-            Console.WriteLine("Email enviado!");
+            Console.WriteLine("ERRO: Preço de compra inválido");
+            Environment.Exit(0);
         }
 
+        Console.WriteLine("Consultando preço...");
+        var price = await get.GetStockPriceAsync(args[0]);
+
+        if (price == null)
+        {
+            Console.WriteLine("ERRO: Falha na requisição à API de preços.");
+            Environment.Exit(0);
+
+        }
+
+        Console.WriteLine($"Preço = {price}\nsendPrice = {sendPrice}");
+        if (price != sendPrice)
+        {
+            Console.WriteLine("\nAnalisando preço ao enviar o email...");
+            if (price > sellPrice)
+            {
+               
+                await emailSender.SendEmail(settings!.EmailSettings, "ALERTA: É recomendável a venda do seu ativo", $"O ativo {args[0]} está acima do preço de referência para venda. \nPreço Atual: {price}");
+                sendPrice = price;
+
+                Console.WriteLine("Email de venda enviado!");
+            }
+            else if (price < buyPrice)
+            {
+
+                await emailSender.SendEmail(settings!.EmailSettings, "ALERTA: É recomendável a compra de um ativo", $"O ativo {args[0]} está abaixo do preço de referência para compra. \nPreço Atual: {price}");
+                sendPrice = price;
+
+                Console.WriteLine("Email de compra enviado!");
+            }
+
+        }
+
+        Console.WriteLine("Tempo de espera");
+        await Task.Delay(TimeSpan.FromSeconds(10));
     }
-
-    Console.WriteLine("Tempo de espera");
-    await Task.Delay(TimeSpan.FromSeconds(10));
+    else if (args.Length == 0)
+    {
+        Console.WriteLine("ERRO: Nenhum argumento foi informado.");
+        Environment.Exit(0);
+    }
+    else
+    {
+        Console.WriteLine($"ERRO: Quantidade inválida de argumentos ({args.Length} informado(s)).");
+        Environment.Exit(0);
+    }
 
 }
 

@@ -1,20 +1,22 @@
 ﻿using Response;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace Integration;
 
 public class GetStockPrice
 {
-    public async Task<decimal> GetStockPriceAsync(string ticker)
+    public async Task<decimal?> GetStockPriceAsync(string ticker)
         {
             HttpClient client = new HttpClient();
             var url = $"https://brapi.dev/api/quote/{ticker}";
             try
             {
-                var response = await client.GetFromJsonAsync<ApiResponse>(url);
+                var call = await client.GetAsync(url);
+
+                call.EnsureSuccessStatusCode();
+
+                var response = await call.Content.ReadFromJsonAsync<ApiResponse>();
+
                 if (response != null)
                 {
                     return response.Results[0].RegularMarketPrice;
@@ -23,8 +25,9 @@ public class GetStockPrice
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+
             }
-            return 0;
+            return null;
         }
 
 }
