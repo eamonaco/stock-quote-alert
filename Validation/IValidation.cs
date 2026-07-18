@@ -1,4 +1,4 @@
-﻿namespace ValidationInterface;
+﻿namespace Validation;
 
 public interface IValidation
 {

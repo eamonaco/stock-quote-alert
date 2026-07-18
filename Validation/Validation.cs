@@ -1,6 +1,4 @@
-﻿using ValidationInterface;
-
-namespace Validation;
+﻿namespace Validation;
 public class Validator : IValidation
 {
     public void ValidateArgs(string[] args)

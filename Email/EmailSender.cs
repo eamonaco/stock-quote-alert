@@ -1,7 +1,6 @@
-﻿using Settings;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
-using EmailInterface;
+using Settings;
 
 namespace Email;
 

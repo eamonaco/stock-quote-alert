@@ -1,4 +1,4 @@
-﻿namespace IntegrationInterface;
+﻿namespace Integration;
 
 public interface IGetStockPrice
 {

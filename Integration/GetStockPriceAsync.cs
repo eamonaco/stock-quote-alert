@@ -1,5 +1,4 @@
-﻿using IntegrationInterface;
-using Response;
+﻿using Models;
 using System.Net.Http.Json;
 
 namespace Integration;

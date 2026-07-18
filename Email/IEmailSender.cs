@@ -1,6 +1,6 @@
 ﻿using Settings;
 
-namespace EmailInterface;
+namespace Email;
 
 public interface IEmailSender
 {
