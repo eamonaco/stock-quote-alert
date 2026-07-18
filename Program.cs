@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Settings;
-using Integration;
 using Email;
+using Integration;
 using Validation;
 
 var json = File.ReadAllText("appsettings.json");
@@ -54,7 +54,7 @@ while (true)
 
     }
 
-    Console.WriteLine("Tempo de espera");
+    Console.WriteLine("Tempo de espera para a próxima requisição...");
     await Task.Delay(TimeSpan.FromSeconds(10));
     
 
