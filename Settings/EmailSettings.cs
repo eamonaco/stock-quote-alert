@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Settings;
+﻿namespace Settings;
 
 public class EmailSettings
 {
@@ -15,9 +11,4 @@ public class EmailSettings
     public string From { get; set; } = string.Empty;
 
 
-}
-
-public class AppSettings
-{
-    public EmailSettings EmailSettings { get; set; } = new();
 }

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
-using Settings;
 using Email;
 using Integration;
 using Validation;
+using Settings;
 
 var json = File.ReadAllText("appsettings.json");
 var settings = JsonSerializer.Deserialize<AppSettings>(json);
