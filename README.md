@@ -154,9 +154,3 @@ A IA foi utilizada principalmente para:
 - revisar a documentação do projeto.
 
 As decisões de implementação, integração entre os componentes, adaptações e validação do funcionamento da aplicação foram realizadas pelo autor.
-
----
-
-## Autor
-
-**Enzo Monaco**
