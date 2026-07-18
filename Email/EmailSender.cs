@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Settings;
+﻿using Settings;
 using System.Net;
 using System.Net.Mail;
+using EmailInterface;
 
 namespace Email;
 
-public class EmailSender {
+public class EmailSender : IEmailSender {
     public async Task SendEmail(EmailSettings config, string assunto, string corpo)
     {
         using var mensagem = new MailMessage();

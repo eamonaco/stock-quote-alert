@@ -1,9 +1,10 @@
-﻿using Response;
+﻿using IntegrationInterface;
+using Response;
 using System.Net.Http.Json;
 
 namespace Integration;
 
-public class GetStockPrice
+public class GetStockPrice : IGetStockPrice
 {
     public async Task<decimal?> GetStockPriceAsync(string ticker)
         {

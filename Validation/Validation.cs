@@ -1,5 +1,7 @@
-﻿namespace Validation;
-public class Validator
+﻿using ValidationInterface;
+
+namespace Validation;
+public class Validator : IValidation
 {
     public void ValidateArgs(string[] args)
     {
